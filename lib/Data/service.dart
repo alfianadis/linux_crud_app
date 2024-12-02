@@ -3,7 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:linux_crud_app/Data/model.dart';
 
 class PersonService {
-  final String baseUrl = 'http://localhost:3000/person';
+  final String baseUrl =
+      'https://c2b7ad06e00f4e23ecc854bd95ac9dcd.serveo.net/person';
 
   Future<List<Person>> getAllPersons() async {
     final response = await http.get(Uri.parse(baseUrl));
