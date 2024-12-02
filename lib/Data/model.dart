@@ -1,37 +1,37 @@
-class FormData {
-  int? id;
-  String name;
-  String gender;
-  String date;
-  String address;
-  String imagePath;
+class Person {
+  final int id;
+  final String nama;
+  final String jenisKelamin;
+  final String tanggalLahir;
+  final String alamat;
 
-  FormData({
-    this.id,
-    required this.name,
-    required this.gender,
-    required this.date,
-    required this.address,
-    required this.imagePath,
+  Person({
+    required this.id,
+    required this.nama,
+    required this.jenisKelamin,
+    required this.tanggalLahir,
+    required this.alamat,
   });
 
-  factory FormData.fromMap(Map<String, dynamic> json) => FormData(
-    id: json['id'],
-    name: json['name'],
-    gender: json['gender'],
-    date: json['date'],
-    address: json['address'],
-    imagePath: json['imagePath'],
-  );
+  // Konversi dari JSON
+  factory Person.fromJson(Map<String, dynamic> json) {
+    return Person(
+      id: json['id'],
+      nama: json['nama'],
+      jenisKelamin: json['jenisKelamin'],
+      tanggalLahir: json['tanggalLahir'],
+      alamat: json['alamat'],
+    );
+  }
 
-  Map<String, dynamic> toMap() {
+  // Konversi ke JSON
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
-      'gender': gender,
-      'date': date,
-      'address': address,
-      'imagePath': imagePath,
+      'nama': nama,
+      'jenisKelamin': jenisKelamin,
+      'tanggalLahir': tanggalLahir,
+      'alamat': alamat,
     };
   }
 }

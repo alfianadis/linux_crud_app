@@ -1,14 +1,14 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:linux_crud_app/Data/helper.dart';
-import 'package:linux_crud_app/Data/model.dart';
 
 import 'package:linux_crud_app/colors.dart';
 import 'package:linux_crud_app/mainscreen.dart';
+import 'package:http/http.dart' as http;
 
 class AddForm extends StatefulWidget {
   const AddForm({super.key});
@@ -21,22 +21,22 @@ class _AddFormState extends State<AddForm> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
 
-  final ImagePicker _picker = ImagePicker();
-  File? _imageFile;
+  // final ImagePicker _picker = ImagePicker();
+  // File? _imageFile;
 
   String selectedDate = '';
   String? selectedGender;
-  String _currentAddress = '';
+  // String _currentAddress = '';
 
-  Future<void> _pickImage(ImageSource source) async {
-    final XFile? pickedFile = await _picker.pickImage(source: source);
+  // Future<void> _pickImage(ImageSource source) async {
+  //   final XFile? pickedFile = await _picker.pickImage(source: source);
 
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
-    }
-  }
+  //   if (pickedFile != null) {
+  //     setState(() {
+  //       _imageFile = File(pickedFile.path);
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -280,91 +280,6 @@ class _AddFormState extends State<AddForm> {
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
-              const Text(
-                'Gambar',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-              ),
-              const SizedBox(height: 10),
-              InkWell(
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder:
-                        (context) => Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ListTile(
-                              leading: const Icon(Icons.camera_alt),
-                              title: const Text('Ambil Foto'),
-                              onTap: () {
-                                Navigator.pop(context);
-                                _pickImage(ImageSource.camera);
-                              },
-                            ),
-                            ListTile(
-                              leading: const Icon(Icons.photo_library),
-                              title: const Text('Pilih dari Galeri'),
-                              onTap: () {
-                                Navigator.pop(context);
-                                _pickImage(ImageSource.gallery);
-                              },
-                            ),
-                          ],
-                        ),
-                  );
-                },
-                child: SizedBox(
-                  height: size.height * 0.3,
-                  width: size.width * 0.4,
-                  child: Container(
-                    color: Colors.white,
-                    child: DottedBorder(
-                      padding: const EdgeInsets.all(8),
-                      radius: const Radius.circular(8),
-                      borderType: BorderType.RRect,
-                      strokeWidth: 0.5,
-                      color: const Color(0xffC4C4C4),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child:
-                                  _imageFile == null
-                                      ? Container(
-                                        width: size.width * 0.1,
-                                        height: size.width * 0.1,
-                                        decoration: BoxDecoration(
-                                          color: AppColors.greenColor,
-                                          borderRadius: BorderRadius.circular(
-                                            30,
-                                          ),
-                                        ),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.add,
-                                            color: AppColors.bgColor,
-                                          ),
-                                        ),
-                                      )
-                                      : Image.file(
-                                        _imageFile!,
-                                        height: size.height * 0.3,
-                                        width: size.width * 0.4,
-                                        fit: BoxFit.contain,
-                                      ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               const SizedBox(height: 30),
               //button submit
               Center(
@@ -378,61 +293,8 @@ class _AddFormState extends State<AddForm> {
                   child: InkWell(
                     highlightColor: Colors.transparent,
                     splashColor: Colors.transparent,
-                    onTap: () async {
-                      try {
-                        FormData formData = FormData(
-                          name: _nameController.text,
-                          gender: selectedGender ?? '',
-                          date: selectedDate,
-                          address: _addressController.text,
-                          imagePath: _imageFile?.path ?? '',
-                        );
-
-                        await DatabaseHelper.instance.insertFormData(formData);
-
-                        // Tampilkan alert berhasil
-                        showDialog(
-                          context: context,
-                          builder:
-                              (context) => AlertDialog(
-                                title: const Text("Berhasil"),
-                                content: const Text("Data berhasil disimpan!"),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => const Mainscreen(),
-                                        ),
-                                      );
-                                    },
-                                    child: const Text("OK"),
-                                  ),
-                                ],
-                              ),
-                        );
-                      } catch (e) {
-                        // Tampilkan alert gagal
-                        showDialog(
-                          context: context,
-                          builder:
-                              (context) => AlertDialog(
-                                title: const Text("Gagal"),
-                                content: Text(
-                                  "Terjadi kesalahan saat menyimpan data: $e",
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context); // Menutup dialog
-                                    },
-                                    child: const Text("OK"),
-                                  ),
-                                ],
-                              ),
-                        );
-                      }
+                    onTap: () {
+                      _submitData();
                     },
                     child: const Center(
                       child: Text(
@@ -453,5 +315,85 @@ class _AddFormState extends State<AddForm> {
         ),
       ),
     );
+  }
+
+  Future<void> _submitData() async {
+    if (_nameController.text.isEmpty ||
+        selectedGender == null ||
+        selectedDate.isEmpty ||
+        _addressController.text.isEmpty) {
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: Text("Validasi Gagal"),
+              content: Text("Semua bidang harus diisi!"),
+              actions: [
+                TextButton(
+                  onPressed: Navigator.of(context).pop,
+                  child: Text("OK"),
+                ),
+              ],
+            ),
+      );
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse(
+          'http://<backend-url>/person',
+        ), // Ganti dengan URL backend Anda
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'nama': _nameController.text,
+          'jenisKelamin': selectedGender,
+          'tanggalLahir': selectedDate,
+          'alamat': _addressController.text,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        // Tampilkan alert berhasil
+        showDialog(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: const Text("Berhasil"),
+                content: const Text("Data berhasil disimpan!"),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Tutup dialog
+                      Navigator.pop(context); // Kembali ke halaman sebelumnya
+                    },
+                    child: const Text("OK"),
+                  ),
+                ],
+              ),
+        );
+      } else {
+        // Tampilkan alert jika gagal
+        final responseBody = jsonDecode(response.body);
+        throw Exception(responseBody['message'] ?? 'Terjadi kesalahan');
+      }
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: const Text("Gagal"),
+              content: Text("Terjadi kesalahan saat menyimpan data: $e"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Tutup dialog
+                  },
+                  child: const Text("OK"),
+                ),
+              ],
+            ),
+      );
+    }
   }
 }

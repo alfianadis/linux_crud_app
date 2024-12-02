@@ -1,5 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:linux_crud_app/Data/helper.dart';
+import 'package:http/http.dart' as http;
 import 'package:linux_crud_app/Data/model.dart';
 import 'package:linux_crud_app/colors.dart';
 import 'package:linux_crud_app/detail_output.dart';
@@ -12,7 +14,8 @@ class OutputForm extends StatefulWidget {
 }
 
 class _OutputFormState extends State<OutputForm> {
-  List<FormData> _formDataList = [];
+  List<Person> _formDataList = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -21,15 +24,81 @@ class _OutputFormState extends State<OutputForm> {
   }
 
   Future<void> _fetchData() async {
-    final data = await DatabaseHelper.instance.fetchAllFormData();
-    setState(() {
-      _formDataList = data;
-    });
+    try {
+      final response = await http.get(
+        Uri.parse(
+          'http://<backend-url>/person',
+        ), // Ganti dengan URL backend Anda
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        setState(() {
+          _formDataList =
+              data
+                  .map((item) => Person.fromJson(item))
+                  .toList(); // Konversi JSON ke daftar objek Person
+          _isLoading = false;
+        });
+      } else {
+        throw Exception('Gagal memuat data');
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: const Text("Error"),
+              content: Text("Terjadi kesalahan saat memuat data: $e"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("OK"),
+                ),
+              ],
+            ),
+      );
+    }
   }
 
   Future<void> _deleteData(int id) async {
-    await DatabaseHelper.instance.deleteFormData(id);
-    _fetchData();
+    try {
+      final response = await http.delete(
+        Uri.parse(
+          'http://<backend-url>/person/$id',
+        ), // Ganti dengan URL backend Anda
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        _fetchData(); // Refresh data setelah penghapusan
+      } else {
+        throw Exception('Gagal menghapus data');
+      }
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: const Text("Error"),
+              content: Text("Terjadi kesalahan saat menghapus data: $e"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text("OK"),
+                ),
+              ],
+            ),
+      );
+    }
   }
 
   @override
@@ -61,7 +130,9 @@ class _OutputFormState extends State<OutputForm> {
         centerTitle: true,
       ),
       body:
-          _formDataList.isEmpty
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _formDataList.isEmpty
               ? const Center(
                 child: Text(
                   'Belum Ada Data\nSilahkan Input Data Dahulu Pada Form Entry',
@@ -93,14 +164,16 @@ class _OutputFormState extends State<OutputForm> {
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(16.0),
                         title: Text(
-                          item.name,
+                          item.nama,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 4),
-                            Text('Alamat: ${item.address}'),
+                            Text('Alamat: ${item.alamat}'),
+                            Text('Tanggal Lahir: ${item.tanggalLahir}'),
+                            Text('Jenis Kelamin: ${item.jenisKelamin}'),
                           ],
                         ),
                         onTap: () {

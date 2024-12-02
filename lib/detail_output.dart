@@ -6,7 +6,7 @@ import 'package:linux_crud_app/Data/model.dart';
 import 'package:linux_crud_app/colors.dart';
 
 class DetailOutput extends StatelessWidget {
-  final FormData formData;
+  final Person formData;
 
   const DetailOutput({super.key, required this.formData});
 
@@ -60,7 +60,7 @@ class DetailOutput extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20, top: 15, bottom: 10),
                   child: Text(
-                    formData.name,
+                    formData.nama,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -85,7 +85,7 @@ class DetailOutput extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20, top: 15, bottom: 10),
                   child: Text(
-                    formData.gender,
+                    formData.jenisKelamin,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -109,7 +109,7 @@ class DetailOutput extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20, top: 15, bottom: 10),
                   child: Text(
-                    formData.date,
+                    formData.tanggalLahir,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -133,59 +133,10 @@ class DetailOutput extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
                   child: Text(
-                    formData.address,
+                    formData.alamat,
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w200,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                height: size.height * 0.3,
-                width: size.width * 0.4,
-                child: GestureDetector(
-                  onTap: () {
-                    if (formData.imagePath.isNotEmpty) {
-                      _showFullImage(context, formData.imagePath);
-                    }
-                  },
-                  child: Container(
-                    color: Colors.white,
-                    child: DottedBorder(
-                      padding: const EdgeInsets.all(8),
-                      radius: const Radius.circular(8),
-                      borderType: BorderType.RRect,
-                      strokeWidth: 0.5,
-                      color: const Color(0xffC4C4C4),
-                      child: Center(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child:
-                              formData.imagePath.isNotEmpty
-                                  ? Image.file(
-                                    File(formData.imagePath),
-                                    height: size.height * 0.3,
-                                    width: size.width,
-                                    fit: BoxFit.contain,
-                                  )
-                                  : Container(
-                                    width: size.width * 0.1,
-                                    height: size.width * 0.1,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.greenColor,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: const Center(
-                                      child: Icon(
-                                        Icons.add,
-                                        color: AppColors.bgColor,
-                                      ),
-                                    ),
-                                  ),
-                        ),
-                      ),
                     ),
                   ),
                 ),
