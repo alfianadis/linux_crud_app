@@ -38,6 +38,7 @@ dependencies:
   sqflite: ^2.4.1
   dotted_border: ^2.1.0
   flutter_svg: ^2.0.16
+  intl: ^0.20.1
 
 dev_dependencies:
   flutter_test:

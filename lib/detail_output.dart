@@ -2,17 +2,24 @@ import 'dart:io';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Import intl untuk format tanggal
 import 'package:linux_crud_app/Data/model.dart';
 import 'package:linux_crud_app/colors.dart';
 
 class DetailOutput extends StatelessWidget {
-  final Person formData;
+  final PersonModel formData;
 
   const DetailOutput({super.key, required this.formData});
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
+    String formattedDate =
+        formData.tanggalLahir is DateTime
+            ? DateFormat('dd-MM-yyyy').format(formData.tanggalLahir)
+            : formData.tanggalLahir.toString();
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -50,24 +57,7 @@ class DetailOutput extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
               const SizedBox(height: 10),
-              Container(
-                height: size.height * 0.07,
-                width: size.width,
-                decoration: BoxDecoration(
-                  color: AppColors.greenSecobdColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20, top: 15, bottom: 10),
-                  child: Text(
-                    formData.nama,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-              ),
+              _buildDetailContainer(size, formData.nama),
 
               const SizedBox(height: 10),
               const Text(
@@ -75,48 +65,16 @@ class DetailOutput extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
               const SizedBox(height: 10),
-              Container(
-                height: size.height * 0.07,
-                width: size.width,
-                decoration: BoxDecoration(
-                  color: AppColors.greenSecobdColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20, top: 15, bottom: 10),
-                  child: Text(
-                    formData.jenisKelamin,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-              ),
+              _buildDetailContainer(size, formData.jenisKelamin),
+
               const SizedBox(height: 10),
               const Text(
-                'Tanggal Input Data',
+                'Tanggal Lahir',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
               const SizedBox(height: 10),
-              Container(
-                height: size.height * 0.07,
-                width: size.width,
-                decoration: BoxDecoration(
-                  color: AppColors.greenSecobdColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20, top: 15, bottom: 10),
-                  child: Text(
-                    formData.tanggalLahir,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ),
-              ),
+              _buildDetailContainer(size, formattedDate),
+
               const SizedBox(height: 10),
               const Text(
                 'Alamat',
@@ -131,7 +89,7 @@ class DetailOutput extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
+                  padding: const EdgeInsets.all(20),
                   child: Text(
                     formData.alamat,
                     style: const TextStyle(
@@ -149,25 +107,21 @@ class DetailOutput extends StatelessWidget {
     );
   }
 
-  void _showFullImage(BuildContext context, String imagePath) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.all(10),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.white,
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.file(File(imagePath), fit: BoxFit.contain),
-            ),
-          ),
-        );
-      },
+  Widget _buildDetailContainer(Size size, String text) {
+    return Container(
+      height: size.height * 0.07,
+      width: size.width,
+      decoration: BoxDecoration(
+        color: AppColors.greenSecobdColor,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(left: 20, top: 15, bottom: 10),
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+        ),
+      ),
     );
   }
 }

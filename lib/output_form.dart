@@ -14,7 +14,7 @@ class OutputForm extends StatefulWidget {
 }
 
 class _OutputFormState extends State<OutputForm> {
-  List<Person> _formDataList = [];
+  List<PersonModel> _formDataList = [];
   bool _isLoading = true;
 
   @override
@@ -37,7 +37,7 @@ class _OutputFormState extends State<OutputForm> {
         setState(() {
           _formDataList =
               data
-                  .map((item) => Person.fromJson(item))
+                  .map((item) => PersonModel.fromJson(item))
                   .toList(); // Konversi JSON ke daftar objek Person
           _isLoading = false;
         });

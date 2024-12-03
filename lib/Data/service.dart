@@ -2,55 +2,36 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:linux_crud_app/Data/model.dart';
 
-class PersonService {
-  final String baseUrl =
-      'https://c2b7ad06e00f4e23ecc854bd95ac9dcd.serveo.net/person';
+class ApiService {
+  final String baseUrl = "https://example.com/api";
 
-  Future<List<Person>> getAllPersons() async {
-    final response = await http.get(Uri.parse(baseUrl));
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
-      return data.map((json) => Person.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to fetch persons');
-    }
-  }
-
-  Future<Person> getPersonById(int id) async {
-    final response = await http.get(Uri.parse('$baseUrl/$id'));
-    if (response.statusCode == 200) {
-      return Person.fromJson(json.decode(response.body));
-    } else {
-      throw Exception('Failed to fetch person');
-    }
-  }
-
-  Future<void> createPerson(Person person) async {
+  // Fungsi untuk mengirim data ke API
+  Future<bool> addPerson(PersonModel person) async {
+    final url = Uri.parse("$baseUrl/person");
     final response = await http.post(
-      Uri.parse(baseUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(person.toJson()),
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: personModelToJson(person),
     );
-    if (response.statusCode != 201) {
-      throw Exception('Failed to create person');
+
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      print("Error: ${response.body}");
+      return false;
     }
   }
 
-  Future<void> updatePerson(int id, Person person) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/$id'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(person.toJson()),
-    );
-    if (response.statusCode != 200) {
-      throw Exception('Failed to update person');
-    }
-  }
+  // Fungsi untuk mengambil data dari API
+  Future<List<PersonModel>> fetchPersons() async {
+    final url = Uri.parse("$baseUrl/person");
+    final response = await http.get(url);
 
-  Future<void> deletePerson(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/$id'));
-    if (response.statusCode != 200) {
-      throw Exception('Failed to delete person');
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      return data.map((e) => PersonModel.fromJson(e)).toList();
+    } else {
+      throw Exception("Failed to fetch data");
     }
   }
 }
